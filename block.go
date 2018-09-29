@@ -42,8 +42,9 @@ func (b *Block) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) 
 		blockCount.WithLabelValues(metrics.WithServer(ctx)).Inc()
 		log.Infof("Blocked %s", state.Name())
 
-		rep := r.SetRcode(r, dns.RcodeNameError)
-		w.WriteMsg(rep)
+		resp := new(dns.Msg)
+		resp.SetRcode(r, dns.RcodeNameError)
+		w.WriteMsg(resp)
 
 		return dns.RcodeNameError, nil
 	}

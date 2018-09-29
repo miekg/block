@@ -21,7 +21,7 @@ func setup(c *caddy.Controller) error {
 		return plugin.Error("block", c.ArgErr())
 	}
 
-	block := new(Block)
+	block := New()
 
 	c.OnStartup(func() error {
 		once.Do(func() { metrics.MustRegister(c, blockCount) })
