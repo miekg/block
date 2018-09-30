@@ -23,6 +23,7 @@ type Block struct {
 
 	update map[string]struct{}
 	sync.RWMutex
+	stop chan struct{}
 
 	Next plugin.Handler
 }
@@ -31,6 +32,7 @@ func New() *Block {
 	return &Block{
 		list:   make(map[string]struct{}),
 		update: make(map[string]struct{}),
+		stop:   make(chan struct{}),
 	}
 }
 
@@ -55,14 +57,13 @@ func (b *Block) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) 
 // Name implements the Handler interface.
 func (b *Block) Name() string { return "block" }
 
-// blocked returns true when name is in list or is a subdomain for any names in the list.
-// "localhost." always return true.
+// blocked returns true when name is in list or is a subdomain for any names in the list. "localhost." is never blocked.
 func (b *Block) blocked(name string) bool {
 	b.RLock()
 	defer b.RUnlock()
 
 	if name == "localhost." {
-		return true
+		return false
 	}
 	_, blocked := b.list[name]
 	if blocked {

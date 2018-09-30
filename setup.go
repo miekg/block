@@ -25,7 +25,13 @@ func setup(c *caddy.Controller) error {
 
 	c.OnStartup(func() error {
 		once.Do(func() { metrics.MustRegister(c, blockCount) })
-		block.download()
+		go func() { block.download() }()
+		go func() { block.refresh() }()
+		return nil
+	})
+
+	c.OnShutdown(func() error {
+		close(block.stop)
 		return nil
 	})
 

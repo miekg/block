@@ -2,6 +2,7 @@ package block
 
 import (
 	"net/http"
+	"time"
 )
 
 // our default block lists.
@@ -14,9 +15,7 @@ var blocklist = map[string]string{
 }
 
 func (b *Block) download() {
-	//	client := &http.Client{Timeout: time.Second * 10}
-
-	ok := 0
+	domains := 0
 	for name, url := range blocklist {
 		resp, err := http.Get(url)
 		if err != nil {
@@ -26,7 +25,7 @@ func (b *Block) download() {
 		if err := listRead(resp.Body, b.update); err != nil {
 			log.Warningf("Failed to parse blocklist %q %q: %s", name, url, err)
 		}
-		ok += len(b.update)
+		domains += len(b.update)
 
 		resp.Body.Close()
 	}
@@ -35,5 +34,21 @@ func (b *Block) download() {
 	b.update = make(map[string]struct{})
 	b.Unlock()
 
-	log.Infof("Block lists updates: %d domains added", ok)
+	log.Infof("Block lists updated: %d domains added", domains)
 }
+
+func (b *Block) refresh() {
+	tick := time.NewTicker(1 * week)
+	defer tick.Stop()
+	for {
+		select {
+		case <-tick.C:
+			b.download()
+
+		case <-b.stop:
+			return
+		}
+	}
+}
+
+const week = time.Hour * 24 * 7

@@ -5,19 +5,23 @@ import (
 	"testing"
 )
 
-func TestListParse(t *testing.T) {
+func TestBlocked(t *testing.T) {
 	var list = `
-# 127.0.0.1	example.com
-127.0.0.1	example.org	third
+127.0.0.1	005.free-counter.co.uk
+127.0.0.1	006.free-adult-counters.x-xtra.com
+127.0.0.1	006.free-counter.co.uk
+127.0.0.1	007.free-counter.co.uk
+127.0.0.1	007.go2cloud.org
+127.0.0.1	localhost
 008.free-counter.co.uk
 com
 `
 
 	b := new(Block)
+
 	r := strings.NewReader(list)
 	l := make(map[string]struct{})
 	listRead(r, l)
-
 	b.list = l
 
 	tests := []struct {
@@ -25,8 +29,13 @@ com
 		blocked bool
 	}{
 		{"example.org.", false},
-		{"example.com.", false},
+		{"localhost.", false},
 		{"com.", false},
+
+		{"005.free-counter.co.uk.", true},
+		{"www.005.free-counter.co.uk.", true},
+		{"008.free-counter.co.uk.", true},
+		{"www.008.free-counter.co.uk.", true},
 	}
 
 	for _, test := range tests {

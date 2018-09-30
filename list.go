@@ -17,13 +17,19 @@ func listRead(r io.Reader, list map[string]struct{}) error {
 		if strings.HasPrefix("#", txt) {
 			continue
 		}
+		var domain string
 		flds := strings.Fields(scanner.Text())
 		switch len(flds) {
 		case 1:
-			list[dns.Fqdn(flds[0])] = struct{}{}
+			domain = dns.Fqdn(flds[0])
 		case 2:
-			list[dns.Fqdn(flds[1])] = struct{}{}
+			domain = dns.Fqdn(flds[1])
 		}
+		// we only allow domains with more thna 2 dots, i.e. don't accidently block an entire TLD.
+		if strings.Count(domain, ".") <= 2 {
+			continue
+		}
+		list[domain] = struct{}{}
 	}
 
 	return scanner.Err()
