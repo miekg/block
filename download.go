@@ -16,18 +16,20 @@ var blocklist = map[string]string{
 
 func (b *Block) download() {
 	domains := 0
-	for name, url := range blocklist {
+	for _, url := range blocklist {
+		log.Infof("Block list update started %q", url)
 		resp, err := http.Get(url)
 		if err != nil {
-			log.Warningf("Failed to download blocklist %q %q: %s", name, url, err)
+			log.Warningf("Failed to download block list %q: %s", url, err)
 			continue
 		}
 		if err := listRead(resp.Body, b.update); err != nil {
-			log.Warningf("Failed to parse blocklist %q %q: %s", name, url, err)
+			log.Warningf("Failed to parse block list %q: %s", url, err)
 		}
 		domains += len(b.update)
-
 		resp.Body.Close()
+
+		log.Infof("Block list update finished %q", url)
 	}
 	b.Lock()
 	b.list = b.update

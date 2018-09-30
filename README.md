@@ -9,6 +9,8 @@
 The block plugin will block any domain that is on the block lists. The block lists are downloaded on
 startup or otherwise once a week.
 
+For a domain that is blocked we will return a NXDOMAIN response.
+
 THIS IS A PROOF OF CONCEPT. IT IS NOT PRODUCTION QUALITY.
 
 ## Syntax
@@ -35,6 +37,15 @@ Block all domain on the block list.
   block
 }
 ```
+
+On startup the block lists are downloaded, and assuming `005.example.org` is on the list, it will
+be blocked, including any subdomains.
+
+~~~
+2018/09/30 08:40:09 [INFO] plugin/block: Block lists updated: 226126 domains added
+2018/09/30 08:40:12 [INFO] plugin/block: Blocked 005.example.org.
+2018/09/30 08:41:41 [INFO] plugin/block: Blocked www.005.example.org.
+~~~
 
 ## Bugs
 
