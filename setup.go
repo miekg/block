@@ -5,15 +5,10 @@ import (
 	"github.com/coredns/coredns/plugin"
 	"github.com/coredns/coredns/plugin/metrics"
 
-	"github.com/mholt/caddy"
+	"github.com/caddyserver/caddy"
 )
 
-func init() {
-	caddy.RegisterPlugin("block", caddy.Plugin{
-		ServerType: "dns",
-		Action:     setup,
-	})
-}
+func init() { plugin.Register("block", setup) }
 
 func setup(c *caddy.Controller) error {
 	c.Next()

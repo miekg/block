@@ -42,9 +42,9 @@ On startup the block lists are downloaded, and assuming `005.example.org` is on 
 be blocked, including any subdomains.
 
 ~~~
-2018/09/30 08:40:09 [INFO] plugin/block: Block lists updated: 226126 domains added
-2018/09/30 08:40:12 [INFO] plugin/block: Blocked 005.example.org.
-2018/09/30 08:41:41 [INFO] plugin/block: Blocked www.005.example.org.
+[INFO] plugin/block: Block lists updated: 226126 domains added
+[INFO] plugin/block: Blocked 005.example.org.
+[INFO] plugin/block: Blocked www.005.example.org.
 ~~~
 
 ## Bugs
